@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import uniqid from 'uniqid'
 import Items from './Items'
@@ -17,8 +17,20 @@ function App() {
   const id = uniqid()
   const [isEdit, setIsEdit] = useState({ id: id, state: false })
   const [task, setTask] = useState('')
-  const [list, setList] = useState([])
   const [newTask, setNewTask] = useState('')
+
+  const [list, setList] = useState(() => {
+    try {
+      const storedList = JSON.parse(localStorage.getItem('tasks'))
+      return storedList || []
+    } catch (error) {
+      console.error('Error retrieving tasks from local storage:', error)
+      return []
+    }
+  })
+  useEffect(() => {
+    localStorage.setItem('tasks', JSON.stringify(list))
+  }, [list])
   const hundleTheme = (e) => {
     e.preventDefault()
     theme === light ? setTheme(dark) : setTheme(light)
